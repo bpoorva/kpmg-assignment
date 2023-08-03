@@ -1,0 +1,48 @@
+CH - 3:
+We have a nested object. We would like a function where you pass in the object and a key and
+get back the value.
+The choice of language and implementation is up to you.
+Example Inputs
+object = {“a”:{“b”:{“c”:”d”}}}
+key = a/b/c
+object = {“x”:{“y”:{“z”:”a”}}}
+key = x/y/z
+value = a
+
+#########################Solution######################################
+
+import sys
+import json
+
+#dict_obj = {"a":{"b":{"c":"d"}}}
+
+def getVal(input):
+  global dict_obj
+  #Splitting key on '/'
+  for var in input.split('/'):
+    #Matching key & if found takes its value as next dictionary to traverse
+    for k, v in dict_obj.items():
+      if var == k:
+        if isinstance(v, dict):
+          dict_obj = v
+        else:
+          print 'value='+ v
+      else:
+        print "No suck key found"+k
+
+#input = "a/b/c"
+
+if __name__ == "__main__":
+  if len(sys.argv) != 3:
+    print "Usage : getValue.py 'object' 'key'"
+  elif len(sys.argv) == 3:
+    dict_obj = json.loads(sys.argv[1])
+    input = sys.argv[2]
+    getVal(input)
+	
+########################################################################
+
+
+
+
+

@@ -1,0 +1,70 @@
+Challenge #2
+We need to write code that will query the meta data of an instance within AWS or Azure or GCP
+and provide a json formatted output.
+The choice of language and implementation is up to you.
+Bonus Points
+The code allows for a particular data key to be retrieved individually
+
+#########################Solution######################################
+
+import boto3
+
+#Function for bonus points - giving value of a specific data key
+def gen_dict_extract(key, var):
+    value = ""
+    if hasattr(var,'items'):
+        for k, v in var.items():
+            if isinstance(v, dict):
+                if v.get(key):
+                    print "value = "+v.get(key)
+                    break
+                else:
+                    value = gen_dict_extract(key, v)
+            elif isinstance(v, list):
+                for i in v:
+                  if i.get(key):
+                      value = i.get(key)
+                      print "value = "+value
+                      break
+                  else:
+                      value = gen_dict_extract(key, i)
+                      if value:
+                        break
+        return value
+
+
+def getMetadata(inst_id, data_key=None):
+  instId=[inst_id]
+  client = boto3.client('ec2')
+  #Saving only instance's metadata in output
+  output = client.describe_instances(InstanceIds=instId)["Reservations"][0]["Instances"][0]
+  # if data key is passed, try to search for its value else return full metadata
+  if data_key:
+    #If data key is found at root level , print its key
+    if output.get(data_key):
+      print "value = {}".format(output.get(data_key))
+    else:
+      #Recursive function to iterate over values which can further be a list or dictionary
+      gen_dict_extract(data_key, output)
+  else:
+    if output:
+      print output
+    else:
+        print "No such instance id  is present."
+
+#Return root key
+getMetadata('i-xyz','ImageId')
+
+#Returning key present inside nested dictionary
+getMetadata('i-xyz','AvailabilityZone')
+
+#Returning key present inside dict -> list -> dict
+getMetadata('i-xyz','DeviceName')
+
+#Returning key present inside dict -> list -> dict -> dict
+getMetadata('i-xyz','VolumeId')
+
+#Returning key present inside dict -> list
+getMetadata('i-xyz','Tags')
+
+########################################################################

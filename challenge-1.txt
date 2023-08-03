@@ -1,0 +1,36 @@
+Challenge #1
+A 3-tier environment is a common setup. Use a tool of your choosing/familiarity create these
+resources on a cloud environment (Azure/AWS/GCP). Please remember we will not be judged
+on the outcome but more focusing on the approach, style and reproducibility.
+
+
+#############Solution#############
+
+I will go with most basic example.
+
+1. Create two subnets - 1 public (having my web-server & app-server) & 1 private (database)
+   aws ec2 create-subnet --vpc-id <vpc-id> --cidr-block 10.0.3.0/24
+
+2. Spin 2 ec2-instance in the above subnets - 
+   aws ec2 run-instances --image-id <ami-id> --instance-type t2.micro
+  
+3. Install necessary packages on 2 servers - 
+ - web & app-server -> sudo apt-get install nginx & sudo apt-get install php
+ - databse server -> sudo apt-get install mysql-server 
+ 
+4. Do the configuration on web/app server - 
+   Add following lines to /etc/nginx/sites-available/default
+   server {
+    listen 80;
+    server_name localhost;
+    location / {
+        root /var/www/html;
+        index index.php;
+    }
+   }
+   
+After this application will be accessible at http://localhost 
+
+For making it highly available these instances can be put in auto-scaling group having data stored on a persistent volume.
+
+######################################   
